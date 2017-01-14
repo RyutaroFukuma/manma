@@ -1,9 +1,11 @@
-// update_at: 20160816 edited by shinocchi
-function onSubmitForm(e) {
+function slack_submitForm(e){
+
   var itemResponses = e.response.getItemResponses();
   var str_answer = '';  // 回答結果の文字列
   var apply_name = '';  // 氏名
   var apply_mail = '';  // メールアドレス
+
+
   for (var i = 0; i < itemResponses.length; i++) {
     var itemResponse = itemResponses[i];
     var question = itemResponse.getItem().getTitle();
@@ -17,11 +19,19 @@ function onSubmitForm(e) {
     str_answer += (i + 1).toString() + '. ' + question + ': ' + answer + '\n';
   }
 
-  // manmaメンバー向けメール設定
-  var admin_mail = 'メールアドレスを入力';
-  var admin_title = '登録通知';
-  var admin_content = '以下の内容でフォームが送信されました。\n\n' + str_answer;
+  var token = '';
+  var slackApp = SlackApp.create(token); //SlackApp インスタンスの取得
+  var slack_message = '以下の内容でフォームが送信されました。\n\n' + str_answer;
 
-  // manmaメンバー向けメール送信
-  GmailApp.sendEmail(admin_mail, admin_title, admin_content, {name: 'manmaシステム'});
+
+
+  var options = {
+    channelId: "#", //チャンネル名
+    userName: "参加者登録", //投稿するbotの名前
+    message: slack_message //投稿するメッセージ
+  };
+
+
+
+  slackApp.postMessage(options.channelId, options.message, {username: options.userName});
 }
